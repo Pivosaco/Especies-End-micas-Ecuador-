@@ -1,0 +1,21 @@
+# ▶️ Paso 1: Clonar repositorio
+!git clone https://github.com/cypamigon/inat_downloader.git
+%cd inat_downloader
+
+# ▶️ Paso 2: Crear archivo CSV con los nombres científicos
+species_csv = """
+name,start_id
+Amblyrhynchus cristatus,0
+Chelonoidis nigra,0
+Pristimantis sobetes,0
+Amazilia luciae,0
+Lagidium peruanum,0
+"""
+with open("species.csv", "w") as f:
+    f.write(species_csv.strip())
+
+# ▶️ Paso 3: Instalar dependencias
+!pip install tqdm
+
+# ▶️ Paso 4: Ejecutar script con filtros
+!python inat_downloader.py -o 100 -q research -l cc-by,cc0 -s large
