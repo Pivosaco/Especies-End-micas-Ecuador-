@@ -1,0 +1,56 @@
+# Paso 1: Instalar Ultralytics si no está
+!pip install ultralytics --upgrade
+
+# Paso 2: Librerías necesarias
+import os
+from ultralytics import YOLO
+
+# Paso 3: Definir ubicación base del dataset
+base_dir = "C:/Users/USUARIO/Downloads/EspeciesEcuador"
+
+# Detectar si el archivo data.yaml está dentro de una subcarpeta
+if os.path.exists(os.path.join(base_dir, "data.yaml")):
+    data_yaml_path = os.path.join(base_dir, "data.yaml")
+elif os.path.exists(os.path.join(base_dir, "EspeciesEcuador", "data.yaml")):
+    data_yaml_path = os.path.join(base_dir, "EspeciesEcuador", "data.yaml")
+else:
+    raise FileNotFoundError("❌ No se encontró el archivo data.yaml en la ruta esperada.")
+
+print(f"✅ data.yaml detectado en: {data_yaml_path}")
+
+# Paso 4: Verificar que las carpetas train/valid existan
+import yaml
+
+with open(data_yaml_path, 'r') as f:
+    data_config = yaml.safe_load(f)
+
+required_folders = [data_config['train'], data_config['val']]
+for folder in required_folders:
+    if not os.path.exists(folder):
+        raise FileNotFoundError(f"❌ Carpeta no encontrada: {folder}")
+    else:
+        print(f"✅ Carpeta encontrada: {folder}")
+
+# Paso 5: Entrenar modelo YOLOv8
+# model = YOLO("yolov8m.pt")
+
+#results = model.train(
+ #   data=data_yaml_path,
+  #  epochs=100,
+   # imgsz=640,
+    #batch=2,
+    #device='cpu'  # Usa '0' si tienes GPU
+
+model = YOLO("yolov8n.pt")  # mucho más liviano
+model.train(
+    data=data_yaml_path,
+    epochs=100,
+    imgsz=640,
+    batch=4,
+    device="cpu"
+
+
+)
+
+# Paso 6: Mostrar resumen
+print("✅ Entrenamiento finalizado. Resultados en 'runs/detect/train'")
