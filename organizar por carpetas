@@ -1,0 +1,35 @@
+import os, shutil
+from pathlib import Path
+import random
+
+# Define nombres científicos y sus nombres simplificados
+species_map = {
+    "Amblyrhynchus cristatus": "iguana_marina",
+    "Chelonoidis nigra": "tortuga_gigante",
+    "Pristimantis sobetes": "rana_enana",
+    "Amazilia luciae": "colibri_esmeraldas",
+    "Lagidium peruanum": "viscacha"
+}
+
+# Crear carpetas para train y val
+base_path = Path("/content/dataset")
+for split in ['train', 'val']:
+    for species in species_map.values():
+        (base_path / split / species).mkdir(parents=True, exist_ok=True)
+
+# Proceso de mover y dividir datos
+source_base = Path("/content/inat_downloader/results")
+for sci_name, short_name in species_map.items():
+    folder = source_base / sci_name
+    images = list(folder.glob("*.jpg"))
+    random.shuffle(images)
+    split_idx = int(0.8 * len(images))
+    train_imgs = images[:split_idx]
+    val_imgs = images[split_idx:]
+
+    for img in train_imgs:
+        shutil.copy(img, base_path / "train" / short_name / img.name)
+    for img in val_imgs:
+        shutil.copy(img, base_path / "val" / short_name / img.name)
+
+print("✅ Dataset organizado en /content/dataset con estructura train/ y val/")
